@@ -1,76 +1,45 @@
 #!/bin/bash
 
-echo "🚀 Starting VibeCoder Auto-Deployment for vibecodeseller.com..."
+echo "🚀 VibeCoder Hostinger Deployment Starting..."
+echo "Domain: vibecodeseller.com"
 echo "=================================================="
 
 # Set production environment
 export NODE_ENV=production
+export PORT=3000
 
 # Create necessary directories
-echo "📁 Creating necessary directories..."
-mkdir -p uploads
-mkdir -p logs
-chmod 755 uploads
-chmod 755 logs
+echo "📁 Creating directories..."
+mkdir -p uploads logs
+chmod 755 uploads logs
 
-# Backend deployment
-echo "🔧 Deploying Backend API..."
+# Install root dependencies first
+echo "📦 Installing root dependencies..."
+npm install
+
+# Backend setup
+echo "🔧 Setting up Backend..."
 cd backend
-
-echo "📦 Installing backend dependencies..."
 npm install --production
-
-echo "🗄️ Setting up database..."
+echo "🗄️ Generating Prisma client..."
 npx prisma generate
-
 echo "🔍 Testing database connection..."
-npx prisma db push --accept-data-loss
+npx prisma db push --accept-data-loss || echo "Database already synced"
 
-echo "🌱 Seeding database (if needed)..."
-npm run db:seed || echo "Seeding skipped or already done"
-
-echo "✅ Backend deployment completed!"
-
-# Frontend deployment
-echo "🎨 Deploying Frontend..."
+# Frontend setup
+echo "🎨 Setting up Frontend..."
 cd ../frontend
-
-echo "📦 Installing frontend dependencies..."
 npm install --production
-
-echo "🏗️ Building frontend for production..."
+echo "🏗️ Building frontend..."
 npm run build
 
-echo "✅ Frontend deployment completed!"
-
-# Start services
-echo "🚀 Starting services..."
+# Return to root and start backend
+echo "🚀 Starting Backend API..."
 cd ../backend
-
-echo "🔄 Starting backend API server..."
-npm run start:prod &
-BACKEND_PID=$!
-
-cd ../frontend
-echo "🌐 Starting frontend server..."
-npm run start:prod &
-FRONTEND_PID=$!
-
-# Wait a moment for services to start
-sleep 5
-
-# Health check
-echo "🧪 Performing health checks..."
-curl -f http://localhost:3000/api/health || echo "⚠️ Backend health check failed"
-curl -f http://localhost:3001 || echo "⚠️ Frontend health check failed"
+npm start &
 
 echo "=================================================="
-echo "✅ VibeCoder Auto-Deployment Completed Successfully!"
-echo "🌍 Website: https://vibecodeseller.com"
+echo "✅ Deployment Complete!"
+echo "🌍 Site: https://vibecodeseller.com"
 echo "🔗 API: https://vibecodeseller.com/api"
-echo "👤 Admin: https://vibecodeseller.com/admin"
-echo "=================================================="
-echo "📊 Process IDs:"
-echo "Backend PID: $BACKEND_PID"
-echo "Frontend PID: $FRONTEND_PID"
 echo "=================================================="

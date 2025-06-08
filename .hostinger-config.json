@@ -1,0 +1,37 @@
+{
+  "type": "nodejs",
+  "version": "18",
+  "main": "backend/src/server.ts",
+  "build": {
+    "commands": [
+      "npm install",
+      "cd backend && npm install",
+      "cd backend && npx prisma generate",
+      "cd ../frontend && npm install",
+      "cd frontend && npm run build"
+    ]
+  },
+  "start": {
+    "command": "cd backend && npm start",
+    "port": 3000
+  },
+  "environment": {
+    "NODE_ENV": "production",
+    "PORT": "3000"
+  },
+  "directories": {
+    "backend": "backend",
+    "frontend": "frontend",
+    "uploads": "uploads",
+    "logs": "logs"
+  },
+  "database": {
+    "type": "mysql",
+    "host": "193.203.184.212",
+    "database": "u238061207_vibecodeseller",
+    "user": "u238061207_vibecoder"
+  },
+  "domain": "vibecodeseller.com",
+  "ssl": true,
+  "auto_deploy": true
+}
