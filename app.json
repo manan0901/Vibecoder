@@ -1,0 +1,29 @@
+{
+  "name": "VibeCoder Marketplace",
+  "description": "Premium coding projects marketplace for vibecodeseller.com",
+  "repository": "https://github.com/manan0901/Vibecoder.git",
+  "logo": "https://vibecodeseller.com/logo.png",
+  "keywords": ["nodejs", "nextjs", "marketplace", "mysql", "razorpay"],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "env": {
+    "NODE_ENV": {
+      "value": "production"
+    },
+    "PORT": {
+      "value": "3000"
+    }
+  },
+  "scripts": {
+    "postdeploy": "cd backend && npx prisma generate && npx prisma db push"
+  }
+}
