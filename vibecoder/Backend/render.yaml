@@ -1,0 +1,62 @@
+services:
+  - type: web
+    name: vibecoder-backend
+    env: node
+    plan: free
+    buildCommand: npm install && npx prisma generate
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        value: mysql://u238061207_vibecoder:Loveisgr8@193.203.184.212:3306/u238061207_vibecodeseller
+      - key: JWT_SECRET
+        value: VibeCoder2024-Production-Super-Secure-JWT-Secret-Key-vibecodeseller-com
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: JWT_REFRESH_SECRET
+        value: VibeCoder2024-Production-Refresh-Token-Secret-vibecodeseller-com
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 30d
+      - key: EMAIL_SERVICE
+        value: smtp
+      - key: EMAIL_HOST
+        value: smtp.hostinger.com
+      - key: EMAIL_PORT
+        value: 465
+      - key: EMAIL_SECURE
+        value: true
+      - key: EMAIL_USER
+        value: noreply@vibecodeseller.com
+      - key: EMAIL_PASS
+        value: Vibeisgr8@
+      - key: EMAIL_FROM
+        value: VibeCoder Marketplace <noreply@vibecodeseller.com>
+      - key: FRONTEND_URL
+        value: https://vibecodeseller.com
+      - key: API_VERSION
+        value: v1
+      - key: RAZORPAY_KEY_ID
+        value: rzp_live_YOUR_LIVE_KEY_ID
+      - key: RAZORPAY_KEY_SECRET
+        value: YOUR_LIVE_SECRET_KEY
+      - key: MAX_FILE_SIZE
+        value: 524288000
+      - key: UPLOAD_PATH
+        value: ./uploads
+      - key: ALLOWED_FILE_TYPES
+        value: zip,rar,7z,tar,gz,pdf,doc,docx,txt,md,js,ts,jsx,tsx,py,java,cpp,c,php,html,css
+      - key: BCRYPT_ROUNDS
+        value: 12
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: LOG_LEVEL
+        value: info
+      - key: DOMAIN
+        value: vibecodeseller.com
+      - key: SSL_ENABLED
+        value: true

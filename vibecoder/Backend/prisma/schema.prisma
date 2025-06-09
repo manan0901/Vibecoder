@@ -1,0 +1,285 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  BUYER
+  SELLER
+  ADMIN
+}
+
+enum ProjectStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum LicenseType {
+  SINGLE
+  MULTI
+  COMMERCIAL
+}
+
+enum TransactionStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum TransactionType {
+  PURCHASE
+  REFUND
+  COMMISSION
+}
+
+enum PaymentMethod {
+  CARD
+  UPI
+  NETBANKING
+  WALLET
+  EMI
+}
+
+// Models
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  password          String
+  firstName         String
+  lastName          String
+  role              UserRole @default(BUYER)
+  avatar            String?
+  bio               String?
+  phone             String?
+  isVerified        Boolean  @default(false)
+  isActive          Boolean  @default(true)
+  emailVerifiedAt   DateTime?
+  lastLoginAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relationships
+  projects          Project[]
+  purchases         Transaction[] @relation("BuyerTransactions")
+  sales             Transaction[] @relation("SellerTransactions")
+  reviews           Review[]
+  moderationLogs    ModerationLog[]
+  downloadSessions  DownloadSession[]
+  downloadLogs      DownloadLog[]
+
+  @@map("users")
+}
+
+model Project {
+  id              String        @id @default(cuid())
+  title           String
+  description     String
+  shortDescription String?
+  techStack       Json          // JSON array of tech stack items
+  category        String
+  tags            Json          // JSON array of tags
+  price           Int           // Price in rupees
+  licenseType     LicenseType   @default(SINGLE)
+  downloadCount   Int           @default(0)
+  viewCount       Int           @default(0)
+  rating          Float?        @default(0)
+  reviewCount     Int           @default(0)
+  status          ProjectStatus @default(DRAFT)
+  isActive        Boolean       @default(true)
+  isFeatured      Boolean       @default(false)
+  
+  // File information
+  mainFile        String?       // S3 key for main project file
+  screenshots     Json          // JSON array of S3 keys for screenshots
+  demoUrl         String?       // Live demo URL
+  githubUrl       String?       // GitHub repository URL
+  documentation   String?       // S3 key for documentation file
+  
+  // SEO and metadata
+  slug            String        @unique
+  metaTitle       String?
+  metaDescription String?
+  
+  // Seller information
+  sellerId        String
+  seller          User          @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  publishedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relationships
+  transactions    Transaction[]
+  reviews         Review[]
+  moderationLogs  ModerationLog[]
+  downloadSessions DownloadSession[]
+  downloadLogs    DownloadLog[]
+
+  @@map("projects")
+}
+
+model Transaction {
+  id                String            @id @default(cuid())
+  amount            Int               // Amount in rupees
+  currency          String            @default("INR")
+  status            TransactionStatus @default(PENDING)
+  type              TransactionType   @default(PURCHASE)
+  paymentMethod     PaymentMethod?
+  paymentGateway    String            @default("RAZORPAY")
+
+  // Payment gateway information
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+  receiptId         String?
+
+  // Transaction details
+  buyerId           String
+  buyer             User              @relation("BuyerTransactions", fields: [buyerId], references: [id])
+
+  sellerId          String
+  seller            User              @relation("SellerTransactions", fields: [sellerId], references: [id])
+
+  projectId         String
+  project           Project           @relation(fields: [projectId], references: [id])
+
+  // Download sessions
+  downloadSessions  DownloadSession[]
+
+  // Commission and fees
+  commission        Int               @default(0) // Platform commission
+  sellerAmount      Int               @default(0) // Amount seller receives
+
+  // Additional information
+  description       String?
+  metadata          Json?             // Store additional payment data
+
+  // Timestamps
+  completedAt       DateTime?
+  failedAt          DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@map("transactions")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 stars
+  comment   String?
+  isActive  Boolean  @default(true)
+  
+  // Relationships
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Ensure one review per user per project
+  @@unique([userId, projectId])
+  @@map("reviews")
+}
+
+model ModerationLog {
+  id        String   @id @default(cuid())
+  action    String   // APPROVED, REJECTED, SUSPENDED, etc.
+  reason    String?
+  notes     String?
+  
+  // Relationships
+  moderatorId String
+  moderator   User     @relation(fields: [moderatorId], references: [id])
+  
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id])
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+
+  @@map("moderation_logs")
+}
+
+model DownloadSession {
+  id              String            @id @default(cuid())
+  projectId       String
+  userId          String
+  accessType      DownloadAccessType
+  token           String            @unique
+  status          DownloadStatus    @default(INITIATED)
+  downloadCount   Int               @default(0)
+  expiresAt       DateTime
+  lastDownloadAt  DateTime?
+  ipAddress       String?
+  userAgent       String?
+  transactionId   String?
+
+  // Relationships
+  project         Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transaction     Transaction?      @relation(fields: [transactionId], references: [id])
+  downloadLogs    DownloadLog[]
+
+  // Timestamps
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@map("download_sessions")
+}
+
+model DownloadLog {
+  id                String          @id @default(cuid())
+  downloadSessionId String
+  projectId         String
+  userId            String
+  action            String          // SESSION_CREATED, ACCESS_VALIDATED, DOWNLOAD_STARTED, etc.
+  ipAddress         String?
+  userAgent         String?
+  metadata          Json?           // Additional log data
+
+  // Relationships
+  downloadSession   DownloadSession @relation(fields: [downloadSessionId], references: [id], onDelete: Cascade)
+  project           Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Timestamps
+  createdAt         DateTime        @default(now())
+
+  @@map("download_logs")
+}
+
+enum DownloadAccessType {
+  OWNER
+  PURCHASED
+  ADMIN
+  FREE
+}
+
+enum DownloadStatus {
+  INITIATED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+
