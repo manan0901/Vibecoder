@@ -108,6 +108,12 @@ model Project {
   demoUrl         String?       // Live demo URL
   githubUrl       String?       // GitHub repository URL
   documentation   String?       // S3 key for documentation file
+
+  // Additional file metadata
+  originalFileName String?      // Original uploaded filename
+  fileSize        Int?          // File size in bytes
+  rejectionReason String?       // Reason for rejection if status is REJECTED
+  submittedAt     DateTime?     // When project was submitted for review
   
   // SEO and metadata
   slug            String        @unique
@@ -182,15 +188,23 @@ model Review {
   id        String   @id @default(cuid())
   rating    Int      // 1-5 stars
   comment   String?
+  title     String?  // Review title
   isActive  Boolean  @default(true)
-  
+  isVerified Boolean @default(false)
+  isHelpful Int      @default(0)
+  isReported Boolean @default(false)
+
+  // Seller response
+  sellerResponse   String?
+  sellerResponseAt DateTime?
+
   // Relationships
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   projectId String
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

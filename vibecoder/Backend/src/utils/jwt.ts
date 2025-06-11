@@ -42,7 +42,7 @@ export function generateAccessToken(user: Pick<User, 'id' | 'email' | 'role'>): 
   };
 
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
+    expiresIn: JWT_EXPIRES_IN as string,
     issuer: 'vibecoder-api',
     audience: 'vibecoder-app',
   });
@@ -58,7 +58,7 @@ export function generateRefreshToken(user: Pick<User, 'id' | 'email' | 'role'>):
   };
 
   return jwt.sign(payload, JWT_REFRESH_SECRET, {
-    expiresIn: JWT_REFRESH_EXPIRES_IN,
+    expiresIn: JWT_REFRESH_EXPIRES_IN as string,
     issuer: 'vibecoder-api',
     audience: 'vibecoder-app',
   });

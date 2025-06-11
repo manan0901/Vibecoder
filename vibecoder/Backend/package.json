@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "echo 'Build completed - using tsx for production'",
+    "build": "echo Build completed - using tsx for production",
     "start": "tsx src/server.ts",
     "test": "jest",
     "test:watch": "jest --watch",

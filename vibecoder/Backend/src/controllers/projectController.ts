@@ -58,6 +58,7 @@ export const createProject = catchAsync(async (req: Request, res: Response, next
       slug,
       sellerId: req.user.id,
       status: ProjectStatus.DRAFT,
+      screenshots: [],
     },
     include: {
       seller: {

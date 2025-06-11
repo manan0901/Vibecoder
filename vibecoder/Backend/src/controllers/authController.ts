@@ -111,7 +111,7 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
 
     SecurityService.logSecurityEvent({
       type: 'LOGIN_FAILURE',
-      ip: req.ip,
+      ip: req.ip || 'unknown',
       userAgent: req.get('User-Agent'),
       details: {
         reason: 'User not found',
@@ -127,7 +127,7 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
     SecurityService.logSecurityEvent({
       type: 'LOGIN_FAILURE',
       userId: user.id,
-      ip: req.ip,
+      ip: req.ip || 'unknown',
       userAgent: req.get('User-Agent'),
       details: {
         reason: 'Account deactivated',
@@ -147,7 +147,7 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
     SecurityService.logSecurityEvent({
       type: 'LOGIN_FAILURE',
       userId: user.id,
-      ip: req.ip,
+      ip: req.ip || 'unknown',
       userAgent: req.get('User-Agent'),
       details: {
         reason: 'Invalid password',
@@ -160,7 +160,7 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
       SecurityService.logSecurityEvent({
         type: 'ACCOUNT_LOCKED',
         userId: user.id,
-        ip: req.ip,
+        ip: req.ip || 'unknown',
         userAgent: req.get('User-Agent'),
         details: {
           reason: 'Too many failed login attempts',
@@ -179,7 +179,7 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
   SecurityService.logSecurityEvent({
     type: 'LOGIN_SUCCESS',
     userId: user.id,
-    ip: req.ip,
+    ip: req.ip || 'unknown',
     userAgent: req.get('User-Agent'),
     details: {
       identifier,
@@ -365,7 +365,7 @@ export const changePassword = catchAsync(async (req: Request, res: Response, nex
   SecurityService.logSecurityEvent({
     type: 'PASSWORD_CHANGE',
     userId: user.id,
-    ip: req.ip,
+    ip: req.ip || 'unknown',
     userAgent: req.get('User-Agent'),
     details: {
       changeTime: new Date().toISOString(),

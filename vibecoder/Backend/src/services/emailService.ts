@@ -31,7 +31,7 @@ function createTransporter(): nodemailer.Transporter {
     throw new Error('Email configuration is incomplete. Please set EMAIL_USER and EMAIL_PASS environment variables.');
   }
 
-  return nodemailer.createTransporter({
+  return nodemailer.createTransport({
     service: emailConfig.service,
     auth: {
       user: emailConfig.user,

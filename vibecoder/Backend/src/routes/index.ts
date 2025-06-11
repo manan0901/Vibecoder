@@ -168,11 +168,6 @@ router.get('/docs', (req, res) => {
         list: 'GET /api/transactions - List user transactions',
         get: 'GET /api/transactions/:id - Get transaction details',
       },
-      admin: {
-        stats: 'GET /api/admin/stats - Platform statistics',
-        users: 'GET /api/admin/users - Manage users',
-        projects: 'GET /api/admin/projects - Moderate projects',
-      },
     },
     authentication: {
       type: 'Bearer Token',
