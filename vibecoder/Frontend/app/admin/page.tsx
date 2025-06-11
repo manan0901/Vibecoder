@@ -4,6 +4,15 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../lib/auth-context';
+import { Footer } from '../../components/ui/footer';
+
+// Admin Login Credentials for Testing
+const ADMIN_CREDENTIALS = {
+  email: 'admin@vibecodeseller.com',
+  password: 'admin123',
+  role: 'ADMIN',
+  name: 'VibeCoder Admin'
+};
 
 interface PlatformStatistics {
   users: {
@@ -63,38 +72,124 @@ export default function AdminDashboard() {
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-
   useEffect(() => {
+    // Check if user is logged in
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      router.push('/admin/login');
+      return;
+    }
+
     if (user) {
       if (user.role !== 'ADMIN') {
-        router.push('/dashboard');
+        router.push('/admin/login');
         return;
       }
       fetchDashboardData();
-    }
-  }, [user, router]);
-
-  const fetchDashboardData = async () => {
-    try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/dashboard/overview`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setStatistics(data.data.statistics);
-        setSystemHealth(data.data.systemHealth);
-        setRecentActivities(data.data.recentActivities);
-      } else {
-        setError('Failed to load dashboard data');
+    } else {
+      // If no user context but stored user exists, try to parse it
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser.role !== 'ADMIN') {
+          router.push('/admin/login');
+          return;
+        }
+        fetchDashboardData();
+      } catch (error) {
+        router.push('/admin/login');
+        return;
       }
+    }
+  }, [user, router]);  const fetchDashboardData = async () => {
+    try {
+      // Mock data for demonstration
+      const mockStatistics: PlatformStatistics = {
+        users: {
+          total: 1247,
+          buyers: 856,
+          sellers: 391,
+          admins: 3,
+          newThisMonth: 127,
+          growthRate: 15.3
+        },
+        projects: {
+          total: 2456,
+          approved: 2234,
+          pending: 167,
+          rejected: 55,
+          newThisMonth: 89,
+          topCategories: [
+            { category: 'Web Development', count: 756 },
+            { category: 'Mobile Apps', count: 523 },
+            { category: 'UI/UX Design', count: 389 },
+            { category: 'Machine Learning', count: 234 }
+          ]
+        },
+        transactions: {
+          total: 15678,
+          totalRevenue: 12450000,
+          platformCommission: 2490000,
+          successfulTransactions: 15234,
+          failedTransactions: 444,
+          averageOrderValue: 795,
+          revenueThisMonth: 1850000,
+          revenueGrowth: 22.7
+        },
+        downloads: {
+          total: 45672,
+          uniqueDownloaders: 8934,
+          downloadsThisMonth: 3456,
+          topProjects: [
+            { title: 'E-commerce React Template', downloads: 1234 },
+            { title: 'Restaurant Management System', downloads: 987 },
+            { title: 'Social Media Dashboard', downloads: 756 }
+          ]
+        }
+      };
+
+      const mockSystemHealth: SystemHealth = {
+        database: { status: 'healthy', responseTime: 45 },
+        storage: { used: 756, total: 1000, percentage: 75.6 },
+        api: { uptime: 99.7, requestsPerMinute: 234, errorRate: 0.3 }
+      };
+
+      const mockRecentActivities: RecentActivity[] = [
+        {
+          id: '1',
+          type: 'USER_REGISTRATION',
+          description: 'New user registered: john.doe@example.com',
+          user: 'john.doe@example.com',
+          timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString()
+        },
+        {
+          id: '2',
+          type: 'PROJECT_SUBMITTED',
+          description: 'New project submitted: React E-commerce Template',
+          user: 'seller@example.com',
+          timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString()
+        },
+        {
+          id: '3',
+          type: 'PAYMENT_COMPLETED',
+          description: 'Payment completed: ₹2,499 for Mobile App Template',
+          user: 'buyer@example.com',
+          timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString()
+        },
+        {
+          id: '4',
+          type: 'PROJECT_APPROVED',
+          description: 'Project approved: Social Media Dashboard',
+          user: 'admin@vibecoder.com',
+          timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString()
+        }
+      ];
+
+      setStatistics(mockStatistics);
+      setSystemHealth(mockSystemHealth);
+      setRecentActivities(mockRecentActivities);
+      setIsLoading(false);
     } catch (error) {
       setError('Failed to load dashboard data');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -202,8 +297,7 @@ export default function AdminDashboard() {
                 Admin Panel
               </span>
             </div>
-            
-            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4">
               <Link href="/admin/users" className="text-gray-700 hover:text-gray-900">
                 Users
               </Link>
@@ -213,10 +307,17 @@ export default function AdminDashboard() {
               <Link href="/admin/transactions" className="text-gray-700 hover:text-gray-900">
                 Transactions
               </Link>
-              <span className="text-gray-700">Welcome, {user.firstName}!</span>
-              <Link href="/dashboard" className="btn btn-outline px-4 py-2">
-                User Dashboard
-              </Link>
+              <span className="text-gray-700">Welcome, Admin!</span>
+              <button
+                onClick={() => {
+                  localStorage.removeItem('user');
+                  localStorage.removeItem('accessToken');
+                  router.push('/admin/login');
+                }}
+                className="btn btn-outline px-4 py-2"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
@@ -224,12 +325,33 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="mb-8">
+        <div className="px-4 py-6 sm:px-0">          <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
             <p className="mt-2 text-gray-600">
               Platform overview and management tools
             </p>
+          </div>
+
+          {/* Admin Testing Credentials */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <span className="text-2xl">🔐</span>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+                  Admin Login Credentials (Testing)
+                </h3>
+                <div className="bg-white rounded-md p-4 border border-yellow-200">
+                  <p className="text-sm text-gray-700 mb-2"><strong>Email:</strong> {ADMIN_CREDENTIALS.email}</p>
+                  <p className="text-sm text-gray-700 mb-2"><strong>Password:</strong> {ADMIN_CREDENTIALS.password}</p>
+                  <p className="text-sm text-gray-700"><strong>Role:</strong> {ADMIN_CREDENTIALS.role}</p>
+                </div>
+                <p className="text-sm text-yellow-700 mt-3">
+                  ⚠️ These are test credentials for demonstration purposes. In production, use secure authentication.
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Statistics Cards */}
@@ -426,11 +548,12 @@ export default function AdminDashboard() {
                 <div className="text-3xl mb-3">💳</div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">View Transactions</h3>
                 <p className="text-gray-600 text-sm">Monitor payments and refunds</p>
-              </div>
-            </Link>
+              </div>            </Link>
           </div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 }

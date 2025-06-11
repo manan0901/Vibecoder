@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../lib/auth-context';
+import { formatCurrency } from '../../lib/utils';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -230,7 +231,7 @@ export default function PaymentModal({ isOpen, onClose, project, onSuccess }: Pa
           </p>
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-500">Price:</span>
-            <span className="text-xl font-bold text-blue-600">₹{project.price.toLocaleString()}</span>
+            <span className="text-xl font-bold text-blue-600">{formatCurrency(project.price)}</span>
           </div>
         </div>
 
@@ -312,7 +313,7 @@ export default function PaymentModal({ isOpen, onClose, project, onSuccess }: Pa
             ) : !razorpayLoaded ? (
               'Loading...'
             ) : (
-              `Pay ₹${project.price.toLocaleString()}`
+              `Pay ${formatCurrency(project.price)}`
             )}
           </button>
         </div>

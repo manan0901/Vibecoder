@@ -8,7 +8,7 @@ import { logApiResponse } from '../middleware/requestLogger';
 import SecurityService, { AccountSecurityService } from '../services/securityService';
 
 // Register user
-export const register = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const register = catchAsync(async (req: Request, res: Response, _next: NextFunction) => {
   const { email, password, firstName, lastName, role = UserRole.BUYER, phone } = req.body;
 
   // Check if user already exists
@@ -85,7 +85,7 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
 
     SecurityService.logSecurityEvent({
       type: 'PERMISSION_DENIED',
-      ip: req.ip,
+      ip: req.ip || 'unknown',
       userAgent: req.get('User-Agent'),
       details: {
         reason: 'Account locked due to too many failed attempts',

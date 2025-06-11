@@ -22,17 +22,16 @@ export default function LoginPage() {
     }
   };
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+  const validateForm = () => {    const newErrors: Record<string, string> = {};
 
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors['email'] = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors['email'] = 'Email is invalid';
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors['password'] = 'Password is required';
     }
 
     setErrors(newErrors);
@@ -47,9 +46,9 @@ export default function LoginPage() {
     }
 
     setIsLoading(true);
-    
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      try {
+      const apiUrl = process.env['NEXT_PUBLIC_API_URL'] || 'http://localhost:3001/api';
+      const response = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,8 +65,7 @@ export default function LoginPage() {
         localStorage.setItem('user', JSON.stringify(data.data.user));
         
         // Redirect to dashboard
-        router.push('/dashboard');
-      } else {
+        router.push('/dashboard');      } else {
         setErrors({ general: data.error || 'Login failed' });
       }
     } catch (error) {
@@ -92,11 +90,10 @@ export default function LoginPage() {
           </p>
         </div>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="card p-6">
-            {errors.general && (
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>          <div className="card p-6">
+            {errors['general'] && (
               <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                {errors.general}
+                {errors['general']}
               </div>
             )}
             
@@ -111,13 +108,13 @@ export default function LoginPage() {
                   type="email"
                   autoComplete="email"
                   required
-                  className={`input mt-1 ${errors.email ? 'border-red-500' : ''}`}
+                  className={`input mt-1 ${errors['email'] ? 'border-red-500' : ''}`}
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
                 />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                {errors['email'] && (
+                  <p className="mt-1 text-sm text-red-600">{errors['email']}</p>
                 )}
               </div>
 
@@ -131,13 +128,13 @@ export default function LoginPage() {
                   type="password"
                   autoComplete="current-password"
                   required
-                  className={`input mt-1 ${errors.password ? 'border-red-500' : ''}`}
+                  className={`input mt-1 ${errors['password'] ? 'border-red-500' : ''}`}
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
                 />
-                {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                {errors['password'] && (
+                  <p className="mt-1 text-sm text-red-600">{errors['password']}</p>
                 )}
               </div>
             </div>

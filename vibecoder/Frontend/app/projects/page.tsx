@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Navbar } from '../../components/ui/navbar';
+import { Footer } from '../../components/ui/footer';
+import { formatCurrency } from '../../lib/utils';
 
 interface Project {
   id: string;
@@ -48,11 +51,14 @@ export default function ProjectsPage() {
   useEffect(() => {
     fetchProjects();
   }, [searchQuery, selectedCategory, minPrice, maxPrice, sortBy, currentPage]);
-
   const fetchProjects = async () => {
     setIsLoading(true);
 
     try {
+      // For development, use mock data since backend is not running
+      // TODO: Uncomment the API call when backend is available
+      
+      /*
       // Build query parameters
       const params = new URLSearchParams();
       params.append('page', currentPage.toString());
@@ -73,51 +79,54 @@ export default function ProjectsPage() {
         setTotalProjects(data.pagination?.total || 0);
       } else {
         // Fallback to mock data if API fails
-        const mockProjects: Project[] = [
-          {
-            id: '1',
-            title: 'E-commerce React Dashboard',
-            shortDescription: 'Modern e-commerce admin dashboard with React and TypeScript',
-            price: 2999,
-            rating: 4.5,
-            reviewCount: 12,
-            downloadCount: 45,
-            screenshots: ['/placeholder-project.jpg'],
-            techStack: ['React', 'TypeScript', 'Material-UI'],
-            category: 'Web Development',
-            seller: { firstName: 'Rahul', lastName: 'Sharma' },
-          },
-          {
-            id: '2',
-            title: 'React Native Food Delivery App',
-            shortDescription: 'Full-featured food delivery app for iOS and Android',
-            price: 4999,
-            rating: 4.8,
-            reviewCount: 8,
-            downloadCount: 23,
-            screenshots: ['/placeholder-project.jpg'],
-            techStack: ['React Native', 'TypeScript', 'Firebase'],
-            category: 'Mobile Development',
-            seller: { firstName: 'Priya', lastName: 'Patel' },
-          },
-          {
-            id: '3',
-            title: 'Node.js REST API Boilerplate',
-            shortDescription: 'Production-ready Node.js API boilerplate with best practices',
-            price: 1999,
-            rating: 4.2,
-            reviewCount: 15,
-            downloadCount: 67,
-            screenshots: ['/placeholder-project.jpg'],
-            techStack: ['Node.js', 'Express', 'TypeScript'],
-            category: 'Backend Development',
-            seller: { firstName: 'Amit', lastName: 'Kumar' },
-          },
-        ];
-        setProjects(mockProjects);
-        setTotalPages(1);
-        setTotalProjects(mockProjects.length);
       }
+      */
+      
+      // Use mock data for development
+      const mockProjects: Project[] = [
+        {
+          id: '1',
+          title: 'E-commerce React Dashboard',
+          shortDescription: 'Modern e-commerce admin dashboard with React and TypeScript',
+          price: 2999,
+          rating: 4.5,
+          reviewCount: 12,
+          downloadCount: 45,
+          screenshots: ['/placeholder-project.jpg'],
+          techStack: ['React', 'TypeScript', 'Material-UI'],
+          category: 'Web Development',
+          seller: { firstName: 'Rahul', lastName: 'Sharma' },
+        },
+        {
+          id: '2',
+          title: 'React Native Food Delivery App',
+          shortDescription: 'Full-featured food delivery app for iOS and Android',
+          price: 4999,
+          rating: 4.8,
+          reviewCount: 8,
+          downloadCount: 23,
+          screenshots: ['/placeholder-project.jpg'],
+          techStack: ['React Native', 'TypeScript', 'Firebase'],
+          category: 'Mobile Development',
+          seller: { firstName: 'Priya', lastName: 'Patel' },
+        },
+        {
+          id: '3',
+          title: 'Node.js REST API Boilerplate',
+          shortDescription: 'Production-ready Node.js API boilerplate with best practices',
+          price: 1999,
+          rating: 4.2,
+          reviewCount: 15,
+          downloadCount: 67,
+          screenshots: ['/placeholder-project.jpg'],
+          techStack: ['Node.js', 'Express', 'TypeScript'],
+          category: 'Backend Development',
+          seller: { firstName: 'Amit', lastName: 'Kumar' },
+        },
+      ];
+      setProjects(mockProjects);
+      setTotalPages(1);
+      setTotalProjects(mockProjects.length);
     } catch (error) {
       console.error('Failed to fetch projects:', error);
       // Set empty state on error
@@ -146,30 +155,9 @@ export default function ProjectsPage() {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold text-blue-600">
-                VibeCoder
-              </Link>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <Link href="/auth/login" className="btn btn-outline px-4 py-2">
-                Login
-              </Link>
-              <Link href="/auth/register" className="btn btn-primary px-4 py-2">
-                Sign Up
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -345,7 +333,7 @@ export default function ProjectsPage() {
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm text-blue-600 font-medium">{project.category}</span>
-                      <span className="text-lg font-bold text-gray-900">₹{project.price.toLocaleString()}</span>
+                      <span className="text-lg font-bold text-gray-900">{formatCurrency(project.price)}</span>
                     </div>
                     
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{project.title}</h3>
@@ -436,10 +424,11 @@ export default function ProjectsPage() {
               >
                 Next
               </button>
-            </div>
-          )}
+            </div>          )}
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 }

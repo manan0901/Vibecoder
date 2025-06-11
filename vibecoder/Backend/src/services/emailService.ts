@@ -20,7 +20,7 @@ const emailConfig: EmailConfig = {
   service: process.env.EMAIL_SERVICE || 'gmail',
   user: process.env.EMAIL_USER || '',
   pass: process.env.EMAIL_PASS || '',
-  from: process.env.EMAIL_FROM || 'VibeCoder Marketplace <noreply@vibecoder.com>',
+  from: process.env.EMAIL_FROM || 'VibeCoder Marketplace <noreply@vibecodeseller.com>',
 };
 
 // Create transporter

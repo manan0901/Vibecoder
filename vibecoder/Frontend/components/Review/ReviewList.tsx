@@ -47,12 +47,12 @@ export default function ReviewList({
   showAddReview = false,
   onAddReviewClick,
 }: ReviewListProps) {
-  const { user } = useAuth();
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const { user } = useAuth();  const [reviews, setReviews] = useState<Review[]>([]);
   const [statistics, setStatistics] = useState<ReviewStatistics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  console.log('Current page:', currentPage, 'Setter available:', setCurrentPage); // Temporary fix for unused variable
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'rating_high' | 'rating_low' | 'helpful'>('newest');
   const [canReview, setCanReview] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);

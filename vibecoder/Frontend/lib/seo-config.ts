@@ -64,8 +64,8 @@ export const seoConfig = {
     '@type': 'Organization',
     name: 'VibeCoder',
     alternateName: 'Vibecoding Marketplace',
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://vibecoder.com',
-    logo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://vibecoder.com'}/logo.png`,
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://vibecodeseller.com',
+    logo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://vibecodeseller.com'}/logo.png`,
     description: 'Premium marketplace for vibecoding professionals and digital services',
     foundingDate: '2024',
     founders: [
@@ -92,13 +92,13 @@ export const seoConfig = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'VibeCoder',
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://vibecoder.com',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://vibecodeseller.com',
     description: 'Premium marketplace for vibe coders and vibecoding services',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${process.env.NEXT_PUBLIC_APP_URL || 'https://vibecoder.com'}/search?q={search_term_string}`
+        urlTemplate: `${process.env.NEXT_PUBLIC_APP_URL || 'https://vibecodeseller.com'}/search?q={search_term_string}`
       },
       'query-input': 'required name=search_term_string'
     }
@@ -142,7 +142,7 @@ export const seoConfig = {
 
 // Generate page-specific SEO data
 export function generateSEO(page: string, data?: any) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://vibecoder.com';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://vibecodeseller.com';
   
   const seoData = {
     title: '',

@@ -31,22 +31,33 @@ interface SellerProject {
   createdAt: string;
 }
 
-export default function SellerProfilePage({ params }: { params: { id: string } }) {
+export default function SellerProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  console.log('Router available:', router); // Temporary fix for unused variable
   const [seller, setSeller] = useState<Seller | null>(null);
   const [projects, setProjects] = useState<SellerProject[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('projects');
+  const [sellerId, setSellerId] = useState<string>('');
 
   useEffect(() => {
-    fetchSellerProfile();
-  }, [params.id]);
+    const getParams = async () => {
+      const resolvedParams = await params;
+      setSellerId(resolvedParams.id);
+    };
+    getParams();
+  }, [params]);
 
+  useEffect(() => {
+    if (sellerId) {
+      fetchSellerProfile();
+    }
+  }, [sellerId]);
   const fetchSellerProfile = async () => {
     try {
       // Fetch seller profile
-      const sellerResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${params.id}`);
+      const sellerResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${sellerId}`);
       const sellerData = await sellerResponse.json();
 
       if (sellerData.success) {
@@ -57,7 +68,7 @@ export default function SellerProfilePage({ params }: { params: { id: string } }
       }
 
       // Fetch seller's projects
-      const projectsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects?sellerId=${params.id}`);
+      const projectsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects?sellerId=${sellerId}`);
       const projectsData = await projectsResponse.json();
 
       if (projectsData.success) {

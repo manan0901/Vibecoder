@@ -21,7 +21,7 @@ interface Project {
   mainFile?: string;
 }
 
-export default function ProjectEditPage({ params }: { params: { id: string } }) {
+export default function ProjectEditPage({ params }: { params: Promise<{ id: string }> }) {
   const { user } = useAuth();
   const router = useRouter();
   const [project, setProject] = useState<Project | null>(null);
@@ -29,15 +29,25 @@ export default function ProjectEditPage({ params }: { params: { id: string } }) 
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadingScreenshots, setUploadingScreenshots] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [projectId, setProjectId] = useState<string>('');
 
   useEffect(() => {
-    fetchProject();
-  }, [params.id]);
+    const getParams = async () => {
+      const resolvedParams = await params;
+      setProjectId(resolvedParams.id);
+    };
+    getParams();
+  }, [params]);
 
+  useEffect(() => {
+    if (projectId) {
+      fetchProject();
+    }
+  }, [projectId]);
   const fetchProject = async () => {
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${params.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${projectId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -80,10 +90,8 @@ export default function ProjectEditPage({ params }: { params: { id: string } }) 
 
     try {
       const formData = new FormData();
-      formData.append('projectFile', file);
-
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${params.id}/upload-file`, {
+      formData.append('projectFile', file);      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${projectId}/upload-file`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -140,10 +148,8 @@ export default function ProjectEditPage({ params }: { params: { id: string } }) 
       const formData = new FormData();
       for (let i = 0; i < files.length; i++) {
         formData.append('screenshots', files[i]);
-      }
-
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${params.id}/upload-screenshots`, {
+      }      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${projectId}/upload-screenshots`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -179,11 +185,9 @@ export default function ProjectEditPage({ params }: { params: { id: string } }) 
     if (!project?.screenshots || project.screenshots.length === 0) {
       setErrors({ general: 'Please upload at least one screenshot before submitting for review' });
       return;
-    }
-
-    try {
+    }    try {
       const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${params.id}/submit`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${projectId}/submit`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

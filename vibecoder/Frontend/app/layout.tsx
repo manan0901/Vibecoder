@@ -39,14 +39,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://vibecoder.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://vibecodeseller.com'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://vibecoder.com',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://vibecodeseller.com',
     siteName: 'VibeCoder - Vibecoding Marketplace',
     title: 'VibeCoder - Premium Marketplace for Vibe Coders & Digital Services',
     description: 'Discover premium coding projects, vibecoding services, and digital products from top developers. Join the ultimate marketplace for vibe coders and vibecoding professionals.',
@@ -99,7 +99,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#6366f1" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
       </head>
-      <body className={`${inter.className} ${poppins.variable} antialiased bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen`}>
+      <body className={`${inter.className} ${poppins.variable} antialiased min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50`}>
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"
@@ -124,7 +124,7 @@ export default function RootLayout({
               "@type": "WebSite",
               "name": "VibeCoder",
               "alternateName": "Vibecoding Marketplace",
-              "url": process.env.NEXT_PUBLIC_APP_URL || "https://vibecoder.com",
+              "url": process.env.NEXT_PUBLIC_APP_URL || "https://vibecodeseller.com",
               "description": "Premium marketplace for vibe coders and vibecoding services",
               "potentialAction": {
                 "@type": "SearchAction",
@@ -145,9 +145,23 @@ export default function RootLayout({
 
         <AuthProvider>
           <div id="root" className="relative">
-            {children}
+            {/* Subtle top gradient line */}
+            <div className="h-1 w-full bg-gradient-to-r from-vibecoder-400 via-vibecoder-600 to-indigo-500"></div>
+            
+            {/* Main content */}
+            <main className="flex flex-col min-h-[calc(100vh-0.25rem)]">
+              {children}
+            </main>
+            
+            {/* Colorful background blur elements - decorative only */}
+            <div className="fixed -top-24 -right-24 w-96 h-96 bg-vibecoder-400/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="fixed -bottom-32 -left-32 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="fixed top-1/4 -right-32 w-64 h-64 bg-pink-400/15 rounded-full blur-2xl pointer-events-none"></div>
           </div>
         </AuthProvider>
+        
+        {/* Loading indicator for improved UX */}
+        <div id="nprogress-container" className="pointer-events-none"></div>
       </body>
     </html>
   );

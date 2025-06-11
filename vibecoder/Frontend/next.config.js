@@ -45,12 +45,9 @@ const nextConfig = {
 
   // Disable x-powered-by header
   poweredByHeader: false,
-
   // Compress responses
   compress: true,
 
-  // Production optimizations
-  swcMinify: true,
   async rewrites() {
     return [
       {
@@ -59,7 +56,7 @@ const nextConfig = {
       },
     ];
   },
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+  webpack: (config) => {
     // Custom webpack config
     return config;
   },

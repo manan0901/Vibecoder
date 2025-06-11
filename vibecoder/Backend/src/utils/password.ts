@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 
 // Get bcrypt rounds from environment
-const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || '12');
+const BCRYPT_ROUNDS = parseInt(process.env['BCRYPT_ROUNDS'] || '12');
 
 // Hash password
 export async function hashPassword(password: string): Promise<string> {

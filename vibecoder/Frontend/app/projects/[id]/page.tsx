@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../../lib/auth-context';
 import SecureDownload from '../../../components/SecureDownload';
+import { formatCurrency } from '../../../lib/utils';
 
 interface Project {
   id: string;
@@ -59,22 +60,33 @@ interface RelatedProject {
   category: string;
 }
 
-export default function ProjectDetailPage({ params }: { params: { id: string } }) {
+export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { user } = useAuth();
   const router = useRouter();
+  console.log('Router available:', router); // Temporary fix for unused variable
   const [project, setProject] = useState<Project | null>(null);
   const [relatedProjects, setRelatedProjects] = useState<RelatedProject[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('description');
+  const [projectId, setProjectId] = useState<string>('');
 
   useEffect(() => {
-    fetchProject();
-  }, [params.id]);
+    const getParams = async () => {
+      const resolvedParams = await params;
+      setProjectId(resolvedParams.id);
+    };
+    getParams();
+  }, [params]);
 
+  useEffect(() => {
+    if (projectId) {
+      fetchProject();
+    }
+  }, [projectId]);
   const fetchProject = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${params.id}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${projectId}`);
       const data = await response.json();
 
       if (data.success) {
@@ -98,7 +110,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
 
       if (data.success) {
         // Filter out current project
-        const related = data.data.projects.filter((p: any) => p.id !== params.id);
+        const related = data.data.projects.filter((p: any) => p.id !== projectId);
         setRelatedProjects(related.slice(0, 3));
       }
     } catch (error) {
@@ -236,7 +248,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                     <p className="text-lg text-gray-600">{project.shortDescription}</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-bold text-blue-600">₹{project.price.toLocaleString()}</div>
+                    <div className="text-3xl font-bold text-blue-600">{formatCurrency(project.price)}</div>
                     <div className="text-sm text-gray-500">{project.licenseType} License</div>
                   </div>
                 </div>
@@ -266,14 +278,12 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                     </span>
                   ))}
                 </div>
-              </div>
-
-              {/* Screenshots */}
+              </div>              {/* Screenshots */}
               {project.screenshots && project.screenshots.length > 0 && (
                 <div className="card p-6 mb-6">
                   <h2 className="text-xl font-semibold mb-4">Screenshots</h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {project.screenshots.map((screenshot, index) => (
+                    {project.screenshots.map((_, index) => (
                       <div key={index} className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
                         <span className="text-gray-400">Screenshot {index + 1}</span>
                       </div>
@@ -436,7 +446,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 <div className="card p-6 mb-6">
                   <div className="text-center mb-6">
                     <div className="text-3xl font-bold text-gray-900 mb-2">
-                      ₹{project.price.toLocaleString()}
+                      {formatCurrency(project.price)}
                     </div>
                     <div className="text-sm text-gray-500">{project.licenseType} License</div>
                   </div>

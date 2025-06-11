@@ -96,19 +96,8 @@ export default function SellerAnalytics() {
       minimumFractionDigits: 0,
     }).format(amount / 100); // Convert from paise to rupees
   };
-
   const formatPercentage = (value: number): string => {
     return `${value.toFixed(1)}%`;
-  };
-
-  const getPeriodLabel = (period: string): string => {
-    switch (period) {
-      case '7d': return 'Last 7 Days';
-      case '30d': return 'Last 30 Days';
-      case '90d': return 'Last 90 Days';
-      case '1y': return 'Last Year';
-      default: return 'Last 30 Days';
-    }
   };
 
   if (!user || user.role !== 'SELLER') {

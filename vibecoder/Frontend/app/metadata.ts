@@ -44,7 +44,7 @@ export const homeMetadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://vibecoder.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://vibecodeseller.com'),
   alternates: {
     canonical: '/',
     languages: {
@@ -55,7 +55,7 @@ export const homeMetadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://vibecoder.com',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://vibecodeseller.com',
     siteName: 'VibeCoder - Vibecoding Marketplace',
     title: 'VibeCoder - Premium Marketplace for Vibe Coders & Vibecoding Services',
     description: 'Join 10,000+ vibecoding professionals earning ₹50K-₹2L monthly. Buy and sell premium coding projects, web development services, and digital products from verified vibe coders.',
